@@ -1,0 +1,15 @@
+{
+  "name": "gestor-suporte",
+  "version": "1.0.0",
+  "description": "Sistema de Gestão de Infraestrutura Escolar e Acadêmica",
+  "main": "js/app.js",
+  "scripts": {
+    "start": "npx http-server -p 8080 -o"
+  },
+  "keywords": [],
+  "author": "Victor Hugo",
+  "license": "ISC",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

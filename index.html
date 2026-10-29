@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>GestorSuporte — Gestão de Infraestrutura Escolar</title>
+  
+  <!-- Linha adicionada para eliminar o erro 404 do Favicon -->
+  <link rel="icon" href="data:,">
+  
+  <!-- Fontes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Estilos (movidos para arquivo externo) -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+</head>
+<body>
+
+  <!-- ================= LOGIN ================= -->
+  <div id="login-screen" class="blueprint-bg">
+    <div class="login-wrap">
+      <div class="login-visual">
+        <div>
+          <div class="logo-mark">GS</div>
+          <div class="brand-name">GestorSuporte</div>
+          <div class="brand-tag">Gestão de infraestrutura escolar e acadêmica</div>
+        </div>
+        <div class="role-explain" id="role-explain"></div>
+      </div>
+      <div class="login-form">
+        <h1>Acessar o sistema</h1>
+        <p class="sub">Cada perfil abre um painel com as ferramentas do seu trabalho.</p>
+        
+        <div class="field">
+          <!-- Adicionado for="login-email" -->
+          <label for="login-email">E-mail institucional</label>
+          <input type="email" id="login-email" value="usuario@escola.edu.br">
+        </div>
+        
+        <div class="field">
+          <!-- Adicionado for="login-password" -->
+          <label for="login-password">Senha</label>
+          <input type="password" id="login-password" value="12345678">
+        </div>
+        
+        <!-- Substituído 'label' por 'div' para não dar erro de acessibilidade -->
+        <div style="font-size:11.5px;color:var(--steel);margin-bottom:8px;display:block;font-family:'IBM Plex Mono';text-transform:uppercase;">Perfil de acesso</div>
+        <div class="role-select" id="role-select">
+          <div class="role-opt active" data-role="ADMIN">ADMIN</div>
+          <div class="role-opt" data-role="COORDENACAO">COORDENAÇÃO</div>
+          <div class="role-opt" data-role="PROFESSOR">PROFESSOR</div>
+        </div>
+        
+        <div class="field">
+          <!-- Adicionado for="login-user" -->
+          <label for="login-user">Entrar como</label>
+          <select id="login-user"></select>
+        </div>
+        
+        <button class="btn-primary" id="btn-login">Entrar no GestorSuporte</button>
+        <div class="sync-status off" id="sync-status-login">Modo local · dados só nesta aba</div>
+        <div class="hint">Demonstração: qualquer senha abre o painel. Abra o site em outra aba ou dispositivo com outro perfil para ver tudo conectado.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SHELL ADMIN / COORDENAÇÃO ================= -->
+  <div id="app-side">
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <div class="logo-mark">GS</div>
+        <div class="brand-name">GestorSuporte</div>
+        <span class="role-tag" id="side-role-tag"></span>
+      </div>
+      <nav class="navlist" id="side-nav"></nav>
+      <div class="sidebar-foot">
+        <div class="sync-status off" id="sync-status-side">Conectando…</div>
+        <button class="bell-btn" id="bell-side">Avisos <span class="bell-count"></span></button>
+        <div class="user-chip">
+          <div class="avatar" id="side-avatar"></div>
+          <div><div class="u-name" id="side-name"></div><div class="u-role" id="side-role"></div></div>
+        </div>
+        <button class="logout-btn" id="btn-logout-side">SAIR DO SISTEMA →</button>
+      </div>
+    </aside>
+    <main class="main" id="side-content"></main>
+  </div>
+
+  <!-- ================= SHELL PROFESSOR ================= -->
+  <div id="app-prof">
+    <header class="prof-header">
+      <div class="prof-header-in">
+        <div style="display:flex;align-items:center;gap:10px;"><div class="logo-mark">GS</div><span class="brand">GestorSuporte</span></div>
+        <nav class="prof-tabs" id="prof-nav"></nav>
+        <div class="prof-user">
+          <button class="bell-btn bell-prof" id="bell-prof">Avisos <span class="bell-count"></span></button>
+          <div class="avatar" id="prof-avatar"></div>
+          <button class="logout-btn" style="margin:0;width:auto;padding:6px 10px;" id="btn-logout-prof">SAIR</button>
+        </div>
+      </div>
+    </header>
+    <main class="prof-main" id="prof-content"></main>
+  </div>
+
+  <!-- ================= MODAL & TOASTS ================= -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal" id="modal-box"></div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <!-- ================= SCRIPT PRINCIPAL ================= -->
+  <!-- A tag 'type="module"' é essencial para usar import/export na arquitetura MVC -->
+  <script type="module" src="js/app.js"></script>
+
+</body>
+</html>
