@@ -12,6 +12,13 @@ export function renderAuthView() {
     if(btnLogin) {
         btnLogin.addEventListener('click', () => AuthController.login());
     }
+
+    const loginPassword = document.getElementById('login-password');
+    if(loginPassword) {
+        loginPassword.addEventListener('keydown', (event) => {
+            if(event.key === 'Enter') AuthController.login();
+        });
+    }
     
     AuthController.atualizaExplicacao();
     AuthController.atualizaLoginUsers();

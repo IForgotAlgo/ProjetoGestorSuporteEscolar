@@ -1,13 +1,14 @@
 import { state } from './models/StateModel.js';
 import { AuthController } from './controllers/AuthController.js';
 import { renderAuthView } from './views/AuthView.js';
-import { mostraSync } from './models/DatabaseModel.js';
+import { mostraSync, conectaDB } from './models/DatabaseModel.js';
 
 console.log("Iniciando a aplicação...");
 
 // Executa a configuração inicial de imediato
 renderAuthView();
 mostraSync(); // Retira a mensagem de "Conectando..."
+conectaDB();
 initApp();
 
 function initApp() {

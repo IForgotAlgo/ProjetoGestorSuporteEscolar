@@ -13,6 +13,10 @@ export const AdminController = {
             toast('Informe nome e um e-mail válido.'); 
             return; 
         }
+        if(DATA.usuarios.some(u => u.email.toLowerCase() === email.toLowerCase() && String(u.id) !== String(id))){
+            toast('Já existe um usuário com este e-mail.');
+            return;
+        }
         
         const base = id ? Object.assign({}, DATA.usuarios.find(x => String(x.id) === String(id))) : { id: uid(), ativo: true, cadastro: hojeCurto() + '/' + new Date().getFullYear(), ts: agora() };
         Object.assign(base, { nome, email, perfil });
@@ -77,6 +81,10 @@ export const AdminController = {
         
         const ini = document.getElementById('f-ini').value;
         const fim = document.getElementById('f-fim').value;
+        if(!ini || !fim || fim <= ini){
+            toast('Informe um horário de início anterior ao horário de término.');
+            return;
+        }
         const t = { id: 't' + uid(), turma, disc, prof, sala, ini, fim, dias: [1,2,3,4,5] };
         
         closeModal();

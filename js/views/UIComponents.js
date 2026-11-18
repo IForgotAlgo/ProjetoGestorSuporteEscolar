@@ -7,12 +7,12 @@ import { ProfController } from '../controllers/ProfController.js';
 import { AdminView } from './AdminView.js';
 import { CoordView } from './CoordView.js';
 import { ProfView } from './ProfView.js';
-import { 
-    esc, pad, hoje, hojeCurto, initials, nomeSala, diasTxt, 
+import {
+    esc, pad, hoje, hojeCurto, initials, nomeSala, diasTxt,
     PRES_CLASS, CHAM_CLASS, badgePres, badgeCham, contaChamados, 
     presencasHoje, turmasHoje, ultimaPresenca, aulaFeita, estadoSala, 
-    qrSvg, minhasNotifs, lastSeen, marcaVisto, atualizaBell, abrirNotifs, 
-    meuNome // <-- Adicione esta função aqui
+    qrSvg, minhasNotifs, marcaVisto, atualizaBell,
+    meuNome
 } from '../utils/helpers.js';
 
 export const NAV = {
@@ -452,7 +452,15 @@ export function verQr(id) {
         `<button class="btn-ghost" id="modal-close-btn">Fechar</button><button class="btn-primary" id="btn-print-qr">Imprimir</button>`
     );
     document.getElementById('modal-close-btn').addEventListener('click', closeModal);
-    document.getElementById('btn-print-qr').addEventListener('click', () => toast('Enviado para impressão.'));
+    document.getElementById('btn-print-qr').addEventListener('click', () => {
+        const popup = window.open('', '_blank', 'width=700,height=700');
+        if (!popup) {
+            toast('Permita pop-ups para imprimir o QR Code.');
+            return;
+        }
+        popup.document.write(`<!doctype html><html><head><title>QR ${esc(s.id)}</title></head><body style="font-family:sans-serif;text-align:center;padding:40px"><h1>${esc(s.nome)}</h1>${qrSvg('GS-' + s.id)}<p><strong>GS-${esc(s.id)}</strong></p><script>window.onload=()=>{window.print();}<\/script></body></html>`);
+        popup.document.close();
+    });
 }
 
 export function modalSala() {
@@ -643,9 +651,47 @@ export const VIEWS = {
     PROFESSOR: { inicio: profInicio, agenda: profAgenda, 'meus-chamados': profChamados, historico: profHistorico }
 };
 
+function abrirAvisos() {
+    marcaVisto();
+    const avisos = minhasNotifs();
+    openModal('Avisos',
+        avisos.length
+            ? avisos.map(a => `
+                <div class="row-item">
+                    <div class="row-time" style="width:84px">${new Date(a.ts).toLocaleTimeString()}</div>
+                    <div class="row-body">
+                        <div class="s" style="color:var(--text);font-size:13px;margin:0">${esc(a.texto)}</div>
+                        ${a.ref ? `<button class="link-btn" data-action="verChamado" data-id="${a.ref}">VER CHAMADO →</button>` : ''}
+                    </div>
+                </div>`).join('')
+            : '<div class="empty">Nenhum aviso para o seu perfil.</div>',
+        '<button class="btn-primary" id="modal-close-btn">Fechar</button>'
+    );
+    document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+}
+
+function exportarCsv() {
+    const linhas = [
+        ['Data', 'Professor', 'Turma', 'Sala', 'Previsto', 'Registrado', 'Status'],
+        ...DATA.presencas.map(p => [p.data, p.prof, p.turma, p.sala, p.prev, p.real, p.status])
+    ];
+    const csv = '\ufeff' + linhas.map(linha => linha.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(';')).join('\r\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `relatorio-presencas-${hojeCurto().replace(/-/g, '')}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    toast('Relatório CSV exportado.');
+}
+
 document.addEventListener('click', (e) => {
     const t = e.target;
     if(!t) return;
+
+    if(t.id === 'btn-logout-side' || t.id === 'btn-logout-prof') AuthController.logout();
     
     if(t.id === 'link-goto-turmas' || t.id === 'link-salas') goto('turmas');
     if(t.id === 'pnd-salas') goto('salas');
@@ -653,7 +699,8 @@ document.addEventListener('click', (e) => {
     if(t.id === 'pnd-cham') goto('chamados');
     if(t.id === 'link-pres') goto('presencas');
     if(t.id === 'link-cham') goto('chamados');
-    if(t.id === 'link-avisos') abrirNotifs();
+    if(t.id === 'link-avisos' || t.id === 'bell-side' || t.id === 'bell-prof') abrirAvisos();
+    if(t.id === 'btn-export-csv') exportarCsv();
     
     if(t.id === 'btn-nova-turma') modalTurma();
     if(t.id === 'btn-novo-usuario') modalUsuario();
@@ -702,15 +749,10 @@ document.addEventListener('change', (e) => {
     }
 });
 
-document.addEventListener('click', (e) => {
-    const t = e.target;
-    if(!t) return;
-    
-    // 👇 ADICIONE ESTA LINHA PARA O LOGOUT FUNCIONAR 👇
-    if(t.id === 'btn-logout-side' || t.id === 'btn-logout-prof') AuthController.logout();
-    
-    if(t.id === 'link-goto-turmas' || t.id === 'link-salas') goto('turmas');
-    if(t.id === 'pnd-salas') goto('salas');
-    if(t.id === 'pnd-users') goto('usuarios');
-    // ... resto do código
+document.getElementById('modal').addEventListener('click', (e) => {
+    if (e.target.id === 'modal') closeModal();
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
 });

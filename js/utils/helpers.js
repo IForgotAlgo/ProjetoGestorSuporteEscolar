@@ -131,7 +131,13 @@ export function avisa(texto, paraQuem, refChamado = null) {
 export function avisaNovas(snap) {}
 
 export function minhasNotifs() {
-    return DATA.atividade.filter(a => state.role === 'ADMIN' || (state.role === 'PROFESSOR' && a.texto.includes(state.nome)));
+    return DATA.atividade.filter(a => {
+        if (!Array.isArray(a.para)) return true;
+        if (state.role === 'ADMIN') return a.para.includes('ADMIN');
+        if (state.role === 'COORDENACAO') return a.para.includes('COORDENACAO');
+        if (state.role === 'PROFESSOR') return a.para.includes('PROFESSOR:' + state.nome);
+        return false;
+    });
 }
 
 export function lastSeen() {

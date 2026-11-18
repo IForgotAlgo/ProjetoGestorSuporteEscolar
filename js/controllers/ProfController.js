@@ -31,7 +31,17 @@ export const ProfController = {
 
     rodaCheckin(turmaId) {
         const aula = DATA.turmas.find(a => a.id === turmaId);
+        if(!aula) {
+            toast('Esta aula não está mais disponível.');
+            closeModal();
+            return;
+        }
         const sala = DATA.salas.find(s => s.id === aula.sala);
+        if(!sala) {
+            toast('A sala desta aula não foi encontrada.');
+            closeModal();
+            return;
+        }
         const btn = document.getElementById('btn-scan');
         
         let cen = document.getElementById('cenario').value;
@@ -42,7 +52,8 @@ export const ProfController = {
         
         const outraSala = cen === 'FORA_DA_SALA' ? (DATA.salas.find(s => s.id !== aula.sala) || {id: 'S-99'}).id : aula.sala;
         const [h, m] = aula.ini.split(':').map(Number);
-        const real = cen === 'ATRASADO' ? `${pad(h)}:${pad(m + 9)}` : `${pad(h)}:${pad(Math.max(0, m - 1))}`;
+        const minutos = h * 60 + m + (cen === 'ATRASADO' ? 9 : -1);
+        const real = `${pad(Math.floor(((minutos % 1440) + 1440) % 1440 / 60))}:${pad((((minutos % 1440) + 1440) % 1440) % 60)}`;
         
         const passos = [
             { t: 'Lendo QR Code da sala', ok: cen !== 'QRCODE_INATIVO', d: cen === 'QRCODE_INATIVO' ? `GS-${aula.sala} · código inativo` : `GS-${outraSala} · lido com sucesso`, stop: cen === 'QRCODE_INATIVO' },
