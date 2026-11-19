@@ -8,17 +8,11 @@ export function renderAuthView() {
         });
     });
     
-    const btnLogin = document.getElementById('btn-login');
-    if(btnLogin) {
-        btnLogin.addEventListener('click', () => AuthController.login());
-    }
-
-    const loginPassword = document.getElementById('login-password');
-    if(loginPassword) {
-        loginPassword.addEventListener('keydown', (event) => {
-            if(event.key === 'Enter') AuthController.login();
-        });
-    }
+    const loginForm = document.getElementById('login-form');
+    if(loginForm) loginForm.addEventListener('submit', event => {
+        event.preventDefault();
+        AuthController.login();
+    });
     
     AuthController.atualizaExplicacao();
     AuthController.atualizaLoginUsers();

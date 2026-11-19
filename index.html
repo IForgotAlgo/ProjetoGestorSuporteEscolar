@@ -32,35 +32,36 @@
         <h1>Acessar o sistema</h1>
         <p class="sub">Cada perfil abre um painel com as ferramentas do seu trabalho.</p>
         
-        <div class="field">
-          <!-- Adicionado for="login-email" -->
-          <label for="login-email">E-mail institucional</label>
-          <input type="email" id="login-email" value="usuario@escola.edu.br">
-        </div>
-        
-        <div class="field">
-          <!-- Adicionado for="login-password" -->
-          <label for="login-password">Senha</label>
-          <input type="password" id="login-password" value="12345678">
-        </div>
-        
-        <!-- Substituído 'label' por 'div' para não dar erro de acessibilidade -->
-        <div style="font-size:11.5px;color:var(--steel);margin-bottom:8px;display:block;font-family:'IBM Plex Mono';text-transform:uppercase;">Perfil de acesso</div>
-        <div class="role-select" id="role-select">
-          <div class="role-opt active" data-role="ADMIN">ADMIN</div>
-          <div class="role-opt" data-role="COORDENACAO">COORDENAÇÃO</div>
-          <div class="role-opt" data-role="PROFESSOR">PROFESSOR</div>
-        </div>
-        
-        <div class="field">
-          <!-- Adicionado for="login-user" -->
-          <label for="login-user">Entrar como</label>
-          <select id="login-user"></select>
-        </div>
-        
-        <button class="btn-primary" id="btn-login">Entrar no GestorSuporte</button>
+        <form id="login-form">
+          <div class="field">
+            <label for="login-email">E-mail institucional</label>
+            <input type="email" id="login-email" value="ana.souza@escola.edu.br" autocomplete="username" required>
+          </div>
+          
+          <div class="field">
+            <label for="login-password">Senha</label>
+            <input type="password" id="login-password" value="gs123456" autocomplete="current-password" required>
+          </div>
+          
+          <div id="role-select-label" style="font-size:11.5px;color:var(--steel);margin-bottom:8px;display:block;font-family:'IBM Plex Mono';text-transform:uppercase;">Perfil de acesso</div>
+          <div class="role-select" id="role-select" role="radiogroup" aria-labelledby="role-select-label">
+            <button type="button" class="role-opt active" data-role="ADMIN" role="radio" aria-checked="true">ADMIN</button>
+            <button type="button" class="role-opt" data-role="COORDENACAO" role="radio" aria-checked="false">COORDENAÇÃO</button>
+            <button type="button" class="role-opt" data-role="PROFESSOR" role="radio" aria-checked="false">PROFESSOR</button>
+          </div>
+          
+          <div class="field">
+            <label for="login-user">Entrar como</label>
+            <select id="login-user"></select>
+          </div>
+          
+          <button type="submit" class="btn-primary" id="btn-login">Entrar no GestorSuporte</button>
+        </form>
         <div class="sync-status off" id="sync-status-login">Modo local · dados só nesta aba</div>
-        <div class="hint">Demonstração: qualquer senha abre o painel. Abra o site em outra aba ou dispositivo com outro perfil para ver tudo conectado.</div>
+        <div class="hint">
+          Acesso de demonstração (senha única): <strong>gs123456</strong><br>
+          Admin: ana.souza@escola.edu.br · Coordenação: marcos.ferreira@escola.edu.br · Professor: carlos.lima@escola.edu.br
+        </div>
       </div>
     </div>
   </div>

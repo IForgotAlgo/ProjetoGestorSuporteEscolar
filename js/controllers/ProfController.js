@@ -2,6 +2,7 @@ import { state } from '../models/StateModel.js';
 import { DATA, gravar } from '../models/DatabaseModel.js';
 import { toast, closeModal, render } from '../views/UIComponents.js';
 import { uid, agora, hojeCurto, avisa, meuNome, pad } from '../utils/helpers.js';
+import { isPresenceDuplicate } from '../utils/validation.js';
 
 export const ProfController = {
     async salvaChamado() {
@@ -43,6 +44,16 @@ export const ProfController = {
             return;
         }
         const btn = document.getElementById('btn-scan');
+        const jaRegistrada = isPresenceDuplicate(DATA.presencas, {
+            prof: meuNome(),
+            turma: aula.turma,
+            data: hojeCurto()
+        });
+        if(jaRegistrada) {
+            toast('Sua presença desta turma já foi registrada hoje.');
+            closeModal();
+            return;
+        }
         
         let cen = document.getElementById('cenario').value;
         if(sala && !sala.qr) cen = 'QRCODE_INATIVO';

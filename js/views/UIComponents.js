@@ -7,6 +7,7 @@ import { ProfController } from '../controllers/ProfController.js';
 import { AdminView } from './AdminView.js';
 import { CoordView } from './CoordView.js';
 import { ProfView } from './ProfView.js';
+import { escapeCsvValue } from '../utils/csv.js';
 import {
     esc, pad, hoje, hojeCurto, initials, nomeSala, diasTxt,
     PRES_CLASS, CHAM_CLASS, badgePres, badgeCham, contaChamados, 
@@ -56,12 +57,15 @@ export function openModal(title, body, foot) {
     
     modalBox.innerHTML = `
         <div class="modal-head">
-            <h3>${title}</h3>
-            <button class="modal-close" aria-label="Fechar" id="btn-close-modal">✕</button>
+            <h3 id="modal-title">${title}</h3>
+            <button type="button" class="modal-close" aria-label="Fechar" id="btn-close-modal">✕</button>
         </div>
         <div class="modal-body">${body}</div>
         ${foot ? `<div class="modal-foot">${foot}</div>` : ''}
     `;
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'modal-title');
     modal.classList.add('active');
     document.getElementById('btn-close-modal').addEventListener('click', closeModal);
 }
@@ -675,7 +679,7 @@ function exportarCsv() {
         ['Data', 'Professor', 'Turma', 'Sala', 'Previsto', 'Registrado', 'Status'],
         ...DATA.presencas.map(p => [p.data, p.prof, p.turma, p.sala, p.prev, p.real, p.status])
     ];
-    const csv = '\ufeff' + linhas.map(linha => linha.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(';')).join('\r\n');
+    const csv = '\ufeff' + linhas.map(linha => linha.map(escapeCsvValue).join(';')).join('\r\n');
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
     const link = document.createElement('a');
     link.href = url;

@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "Sistema de Gestão de Infraestrutura Escolar e Acadêmica",
   "main": "js/app.js",
+  "type": "module",
   "scripts": {
-    "start": "npx http-server -p 8080 -o"
+    "start": "npx http-server -p 8080 -o",
+    "test": "node --test"
   },
   "keywords": [],
   "author": "Victor Hugo",

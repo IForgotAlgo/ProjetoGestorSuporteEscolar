@@ -2,10 +2,11 @@ import { state } from '../models/StateModel.js';
 import { DATA } from '../models/DatabaseModel.js';
 import { PERFIS } from '../models/MockData.js';
 import { initials, atualizaBell } from '../utils/helpers.js';
-import { montaNav, goto, closeModal } from '../views/UIComponents.js';
+import { montaNav, goto, closeModal, toast } from '../views/UIComponents.js';
 
 export const AuthController = {
     roleEscolhido: 'ADMIN',
+    DEMO_PASSWORD: 'gs123456',
     
     atualizaExplicacao() {
         const p = PERFIS[this.roleEscolhido];
@@ -22,19 +23,48 @@ export const AuthController = {
         const ativos = DATA.usuarios.filter(u => u.perfil === this.roleEscolhido && u.ativo);
         sel.innerHTML = ativos.length ? ativos.map(u => `<option>${u.nome}</option>`).join('') : `<option>${PERFIS[this.roleEscolhido].user}</option>`;
         if(cur && ativos.some(u => u.nome === cur)) sel.value = cur;
+        const usuario = ativos.find(u => u.nome === sel.value) || ativos[0];
+        if(usuario) {
+            const emailInput = document.getElementById('login-email');
+            if(emailInput) emailInput.value = usuario.email;
+        }
     },
     
     selecionaRole(role, element) {
-        document.querySelectorAll('.role-opt').forEach(x => x.classList.remove('active'));
+        document.querySelectorAll('.role-opt').forEach(x => {
+            x.classList.remove('active');
+            x.setAttribute('aria-checked', 'false');
+        });
         element.classList.add('active');
+        element.setAttribute('aria-checked', 'true');
         this.roleEscolhido = role;
         this.atualizaExplicacao();
         this.atualizaLoginUsers();
     },
     
     login() {
+        const emailInput = document.getElementById('login-email');
+        const passwordInput = document.getElementById('login-password');
+        const email = emailInput.value.trim().toLowerCase();
+        const password = passwordInput.value;
+        const nome = document.getElementById('login-user').value;
+        const usuario = DATA.usuarios.find(u => u.nome === nome && u.ativo);
+
+        if(!usuario || usuario.perfil !== this.roleEscolhido) {
+            toast('Selecione um usuário ativo para o perfil escolhido.');
+            return;
+        }
+        if(email !== usuario.email.toLowerCase()) {
+            toast('Use o e-mail do usuário selecionado.');
+            return;
+        }
+        if(password !== this.DEMO_PASSWORD) {
+            toast('Senha de demonstração inválida.');
+            return;
+        }
+
         state.role = this.roleEscolhido;
-        state.nome = document.getElementById('login-user').value || PERFIS[state.role].user;
+        state.nome = usuario.nome;
         const p = PERFIS[state.role];
         
         document.body.className = p.theme;

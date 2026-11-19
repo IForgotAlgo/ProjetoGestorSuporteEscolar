@@ -37,6 +37,12 @@ export function clone(obj) {
     return JSON.parse(JSON.stringify(obj));
 }
 
+export function escapeCsvValue(value) {
+    let text = String(value ?? '');
+    if(/^[=+\-@]/.test(text)) text = "'" + text;
+    return `"${text.replace(/"/g, '""')}"`;
+}
+
 export function initials(name) {
     if (!name) return '??';
     const parts = name.trim().split(' ');
@@ -125,7 +131,27 @@ export function qrSvg(text) {
 export function avisa(texto, paraQuem, refChamado = null) {
     const obj = { id: uid(), ts: agora(), texto, para: paraQuem, ref: refChamado };
     DATA.atividade.unshift(obj);
+    try {
+        const avisos = JSON.parse(localStorage.getItem('gs_atividade') || '[]');
+        avisos.unshift(obj);
+        localStorage.setItem('gs_atividade', JSON.stringify(avisos.slice(0, 200)));
+    } catch (_) {}
+    window.dispatchEvent(new CustomEvent('gs:notification', { detail: obj }));
     atualizaBell();
+    return obj;
+}
+
+export function carregaNotificacoes() {
+    try {
+        const avisos = JSON.parse(localStorage.getItem('gs_atividade') || '[]');
+        if(Array.isArray(avisos)) {
+            const ids = new Set(DATA.atividade.map(a => a.id));
+            avisos.slice().reverse().forEach(aviso => {
+                if(aviso && !ids.has(aviso.id)) DATA.atividade.push(aviso);
+            });
+            DATA.atividade.sort((a, b) => b.ts - a.ts);
+        }
+    } catch (_) {}
 }
 
 export function avisaNovas(snap) {}

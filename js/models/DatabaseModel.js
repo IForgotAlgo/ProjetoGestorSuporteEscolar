@@ -3,6 +3,7 @@ import { state } from './StateModel.js';
 import { AuthController } from '../controllers/AuthController.js';
 import { toast, render } from '../views/UIComponents.js';
 import { clone, atualizaBell, avisaNovas } from '../utils/helpers.js';
+import { isPresenceDuplicate } from '../utils/validation.js';
 
 export const DATA = { usuarios, salas, turmas, presencas, chamados, atividade };
 export let db = null;
@@ -38,6 +39,13 @@ export function aoMudar(col) {
 
 export async function gravar(col, obj) {
     const dado = clone(obj);
+    if(col === 'presencas') {
+        const jaRegistrada = isPresenceDuplicate(DATA.presencas, dado);
+        if(jaRegistrada) {
+            toast('Já existe um registro de presença para esta aula hoje.');
+            return false;
+        }
+    }
     if (db) {
         try { 
             await db.collection(col).doc(String(dado.id)).set(dado); 
@@ -104,3 +112,9 @@ export async function conectaDB() {
     assina('atividade', db.collection('atividade').orderBy('ts', 'desc').limit(60));
     AuthController.atualizaLoginUsers();
 }
+
+window.addEventListener('gs:notification', async event => {
+    if(db && event.detail) {
+        await gravar('atividade', event.detail);
+    }
+});
